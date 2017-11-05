@@ -74,11 +74,6 @@ module.exports = class FrontendConfig extends BaseConfig {
 
   _getHeaderEntry () {
     let res = []
-    // [sharedb] When addon is enabled, add client-side of the sharedb lib
-    // to the client bundles
-    if (this.options.addons.includes('sharedb')) {
-      res.push('racer-highway/lib/browser')
-    }
     return res
   }
 

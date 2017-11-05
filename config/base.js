@@ -16,7 +16,6 @@ module.exports = class BaseConfig {
       preLoaders: [],
       postLoaders: [],
       // Existing addons: [
-      //   'sharedb' -- plugs in racer-highway client-side script and loads it with the proper config
       // ]
       addons: []
     })
