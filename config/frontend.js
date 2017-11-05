@@ -40,16 +40,6 @@ module.exports = class FrontendConfig extends BaseConfig {
 
     this.config.entry = this._getEntries(this.apps, this.options.frontend.baseEntry)
 
-    // [sharedb] When addon is enabled, plug in racer-highway-loader to handle
-    // the client-side part of racer-highway. Which is used to establish
-    // the client-server websocket connection for the sharedb
-    if (this.options.addons.includes('sharedb')) {
-      this.config.module.loaders = this.config.module.loaders.concat([ {
-        include: /racer-highway\/lib\/browser\/index\.js$/,
-        loaders: [ path.join(__dirname, '../loaders/racer-highway-loader.js') ]
-      }])
-    }
-
     this.config.module.loaders = this.config.module.loaders.concat([
       {
         test: /\.svg$/,
