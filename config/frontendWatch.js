@@ -16,14 +16,18 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
         ? this.options.frontend.devtool
         : this.options.devtool
 
-    this.config.postcss = this._getPostCss()
-
     this.config.module.rules = this.config.module.rules.concat([{
       test: /\.css$/,
       use: [
         'style-loader',
         'raw-loader',
-        'postcss-loader'
+        {
+          loader: 'postcss-loader',
+          options: {
+            ident: 'postcss',
+            plugins: this._getPostCssPlugins()
+          }
+        }
       ]
     }])
 

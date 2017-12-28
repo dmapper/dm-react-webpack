@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const csswring = require('csswring')
 const webpack = require('webpack')
 const FrontendConfig = require('./frontend')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
@@ -25,10 +24,6 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
       this.config.devtool = 'source-map'
     }
 
-    this.config.postcss = this._getPostCss([
-      csswring() // minification
-    ])
-
     this.config.stats = this.config.stats || {}
     if (this.config.stats.children == null) this.config.stats.children = false
 
@@ -36,7 +31,16 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
       test: /\.css$/,
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader',
-        use: ['raw-loader', 'postcss-loader']
+        use: [
+          'raw-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: this._getPostCssPlugins()
+            }
+          }
+        ]
       })
     }])
 
@@ -97,6 +101,10 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
       fullPath: false,
       path: this.config.output.path
     }))
+  }
+
+  _getPostCssPlugins () {
+    return super._getPostCssPlugins().concat([require('csswring')()])
   }
 
   _getActualStylusRule (...args) {

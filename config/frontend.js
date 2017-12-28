@@ -1,8 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
-const autoprefixer = require('autoprefixer')
-const postcssFilenamePrefix = require('postcss-filename-prefix')
 const webpack = require('webpack')
 const BaseConfig = require('./base')
 const url = require('url')
@@ -98,15 +96,15 @@ module.exports = class FrontendConfig extends BaseConfig {
     return res
   }
 
-  _getPostCss (plugins = []) {
-    let DEFAULT_POSTCSS_PLUGINS = [
-      autoprefixer({ browsers: ['last 2 version', '> 1%', 'ie 10', 'android 4'] })
-    ]
+  _getPostCssPlugins () {
+    let plugins = []
+    plugins.push(
+      require('autoprefixer')({ browsers: ['last 2 version', '> 1%', 'ie 10', 'android 4'] })
+    )
     if (this.options.moduleMode) {
-      DEFAULT_POSTCSS_PLUGINS.push(postcssFilenamePrefix())
+      plugins.push(require('postcss-filename-prefix')())
     }
-    if (!_.isArray(plugins)) plugins = [plugins]
-    return () => DEFAULT_POSTCSS_PLUGINS.concat(plugins)
+    return plugins
   }
 
   _getStylusParams () {
@@ -120,7 +118,13 @@ module.exports = class FrontendConfig extends BaseConfig {
     params = _.merge({}, this._getStylusParams(), params)
     return [
       'raw-loader',
-      'postcss-loader',
+      {
+        loader: 'postcss-loader',
+        options: {
+          ident: 'postcss',
+          plugins: this._getPostCssPlugins()
+        }
+      },
       {
         loader: 'stylus-loader',
         options: params
