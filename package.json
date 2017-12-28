@@ -50,10 +50,6 @@
     "webpack-dev-server": "2.9.7",
     "yaml-loader": "~0.5.0"
   },
-  "peerDependencies": {
-    "webpack": "*",
-    "webpack-dev-server": "*"
-  },
   "optionalPeerDependencies": {
     "racer-highway": ">=6.1.0"
   }
