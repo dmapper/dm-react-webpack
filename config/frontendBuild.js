@@ -21,7 +21,6 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
     this.config.output.filename = '[name].[hash].js'
 
     this.config.cache = this.options.frontend.cache
-    this.config.debug = false
     if (this.options.frontend.productionSourceMaps) {
       this.config.devtool = 'source-map'
     }

@@ -14,7 +14,6 @@ module.exports = class BackendBuildConfig extends BackendConfig {
     })
 
     this.config.cache = this.options.backend.cache
-    this.config.debug = false
     this.config.devtool = 'source-map'
 
     if (this.options.backend.uglify) {

@@ -9,7 +9,6 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
     super(...args)
 
     this.config.cache = true
-    this.config.debug = true
     if (this.options.unsafeCache !== false) {
       this.config.resolve.unsafeCache = this.options.unsafeCache
     }
@@ -76,6 +75,10 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
     this.config.plugins = this.config.plugins.concat([
       new webpack.HotModuleReplacementPlugin({ quiet: true })
     ])
+
+    this.config.plugins.push(new webpack.LoaderOptionsPlugin({
+      debug: true
+    }))
 
     this.config.devServer = {
       publicPath: '/build/client/',
