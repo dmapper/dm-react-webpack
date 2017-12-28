@@ -37,6 +37,7 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
             loader: 'postcss-loader',
             options: {
               ident: 'postcss',
+              sourceMap: true,
               plugins: this._getPostCssPlugins()
             }
           }

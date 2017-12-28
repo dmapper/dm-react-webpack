@@ -121,6 +121,7 @@ module.exports = class FrontendConfig extends BaseConfig {
         loader: 'postcss-loader',
         options: {
           ident: 'postcss',
+          sourceMap: true,
           plugins: this._getPostCssPlugins()
         }
       },

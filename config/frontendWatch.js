@@ -25,6 +25,7 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
           loader: 'postcss-loader',
           options: {
             ident: 'postcss',
+            sourceMap: true,
             plugins: this._getPostCssPlugins()
           }
         }
@@ -70,7 +71,7 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
       let entry = this.config.entry[name]
 
       this.config.entry[name] = [
-        `webpack-dev-server/client?${this.options.webpackUrl}`,
+        // `webpack-dev-server/client?${this.options.webpackUrl}`,
         // 'webpack/hot/dev-server',
         path.join(__dirname, '../wdsVisual')
       ].concat(entry || [])
