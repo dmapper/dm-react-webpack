@@ -71,7 +71,7 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
 
       this.config.entry[name] = [
         `webpack-dev-server/client?${this.options.webpackUrl}`,
-        'webpack/hot/dev-server',
+        // 'webpack/hot/dev-server',
         path.join(__dirname, '../wdsVisual')
       ].concat(entry || [])
     }

@@ -64,7 +64,6 @@ module.exports = class FrontendConfig extends BaseConfig {
 
     this.config.output = {
       path: path.join(this.options.dirname, '/build/client'),
-      pathInfo: true,
       publicPath: `http://localhost:${this.options.webpackPort}/build/client/`,
       filename: '[name].js'
     }
