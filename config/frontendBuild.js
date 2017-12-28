@@ -33,23 +33,35 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
     this.config.stats = this.config.stats || {}
     if (this.config.stats.children == null) this.config.stats.children = false
 
-    this.config.module.loaders = this.config.module.loaders.concat([{
+    this.config.module.rules = this.config.module.rules.concat([{
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract('style-loader', 'raw!postcss')
+      use: ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: ['raw-loader', 'postcss-loader']
+      })
     }])
 
-    this.config.module.loaders = this.config.module.loaders.concat(
-        this._getBeforeStylusLoaders())
+    this.config.module.rules = this.config.module.rules.concat(
+        this._getBeforeStylusRule())
 
-    this.config.module.loaders.push(this._getStylusLoader())
+    this.config.module.rules.push(this._getStylusRule())
 
-    let jsxLoaders = ['babel?presets[]=es2015&presets[]=stage-0&presets[]=react&plugins[]=add-module-exports&plugins[]=transform-decorators-legacy']
+    let jsxRules = [
+      {
+        loader: 'babel-loader',
+        options: {
+          presets: ['es2015', 'stage-0', 'react'],
+          plugins: ['add-module-exports', 'transform-decorators-legacy']
+        }
+      }
+    ]
 
-    if (this.options.frontend.classPrefix) jsxLoaders.push('react-prefix')
+    if (this.options.frontend.classPrefix) jsxRules.push('react-prefix-loader')
 
-    this.config.module.postLoaders.push({
+    this.config.module.rules.push({
       test: /\.jsx?$/,
-      loaders: jsxLoaders,
+      use: jsxRules,
+      enforce: 'post',
       exclude: /node_modules/
     })
 
@@ -70,10 +82,14 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
           warnings: false
         }
       }
-      if (!this.options.frontend.productionSourceMaps) {
-        uglifyOptions.sourceMap = false
+      if (this.options.frontend.productionSourceMaps) {
+        uglifyOptions.sourceMap = true
       }
       this.config.plugins.push(new webpack.optimize.UglifyJsPlugin(uglifyOptions))
+      // Switch loaders to minimized mode
+      this.config.plugins.push(new webpack.LoaderOptionsPlugin({
+        minimize: true
+      }))
     }
 
     // Write hash info metadata into json file
@@ -84,8 +100,11 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
     }))
   }
 
-  _getActualStylusLoader (...args) {
-    return ExtractTextPlugin.extract('style-loader', super._getActualStylusLoader(...args))
+  _getActualStylusRule (...args) {
+    return ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      use: super._getActualStylusRule(...args)
+    })
   }
 
 }

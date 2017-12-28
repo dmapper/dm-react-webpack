@@ -19,9 +19,14 @@ module.exports = class BackendBuildConfig extends BackendConfig {
 
     if (this.options.backend.uglify) {
       this.config.plugins.push(new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
         compress: {
           warnings: false
         }
+      }))
+      // Switch loaders to minimized mode
+      this.config.plugins.push(new webpack.LoaderOptionsPlugin({
+        minimize: true
       }))
     }
   }

@@ -19,31 +19,45 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
 
     this.config.postcss = this._getPostCss()
 
-    this.config.module.loaders = this.config.module.loaders.concat([{
+    this.config.module.rules = this.config.module.rules.concat([{
       test: /\.css$/,
-      loader: 'style!raw!postcss'
+      use: [
+        'style-loader',
+        'raw-loader',
+        'postcss-loader'
+      ]
     }])
 
-    this.config.module.loaders = this.config.module.loaders.concat(
-        this._getBeforeStylusLoaders())
+    this.config.module.rules = this.config.module.rules.concat(
+        this._getBeforeStylusRule())
 
-    this.config.module.loaders.push(this._getStylusLoader())
+    this.config.module.rules.push(this._getStylusRule())
 
-    let jsxLoaders = ['babel?cacheDirectory&presets[]=es2015&presets[]=stage-0&presets[]=react&presets[]=react-hmre&plugins[]=add-module-exports&plugins[]=transform-decorators-legacy']
+    let jsxRules = [
+      {
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+          presets: ['es2015', 'stage-0', 'react', 'react-hmre'],
+          plugins: ['add-module-exports', 'transform-decorators-legacy']
+        }
+      }
+    ]
 
-    if (this.options.frontend.classPrefix) jsxLoaders.push('react-prefix')
+    if (this.options.frontend.classPrefix) jsxRules.push('react-prefix-loader')
 
-    this.config.module.postLoaders.push({
+    this.config.module.rules.push({
       test: /\.jsx?$/,
-      loaders: jsxLoaders,
+      use: jsxRules,
+      enforce: 'post',
       exclude: /node_modules/
     })
 
     this._initDevConfig()
   }
 
-  _getActualStylusLoader (...args) {
-    return 'style!' + super._getActualStylusLoader(...args)
+  _getActualStylusRule (...args) {
+    return ['style-loader'].concat(super._getActualStylusRule(...args))
   }
 
   // Configure webpack-dev-server and hot reloading

@@ -13,8 +13,6 @@ module.exports = class BaseConfig {
       dirname: process.cwd(),
       moduleMode: false,
       devtool: 'source-map',
-      preLoaders: [],
-      postLoaders: [],
       // Existing addons: [
       // ]
       addons: []
@@ -30,12 +28,12 @@ module.exports = class BaseConfig {
     }
 
     this.config.module = {
-      loaders: [{
+      rules: [{
         include: /\.json$/,
-        loader: 'json'
+        use: ['json-loader']
       }, {
         include: /\.yaml$/,
-        loader: 'json!yaml'
+        use: ['json-loader', 'yaml-loader']
       }]
     }
 
@@ -59,10 +57,6 @@ module.exports = class BaseConfig {
     }
 
     this.config.plugins = this.options.plugins || []
-
-    this.config.module.preLoaders = this.options.preLoaders
-
-    this.config.module.postLoaders = this.options.postLoaders
 
     if (this.options.noParse != null) {
       this.config.module.noParse = this.options.noParse

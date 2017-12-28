@@ -11,9 +11,7 @@ module.exports = class BackendConfig extends BaseConfig {
 
     _.defaultsDeep(this.options, {
       backend: {
-        loaders: [],
-        preLoaders: [],
-        postLoaders: []
+        rules: []
       }
     })
     if (!this.options.backendApps) this.options.backendApps = ['server']
@@ -25,17 +23,20 @@ module.exports = class BackendConfig extends BaseConfig {
     this.config.entry = this._getEntries(this.apps, this.options.backend.baseEntry)
 
     // Babel
-    this.config.module.loaders = this.config.module.loaders.concat([{
+    this.config.module.rules = this.config.module.rules.concat([{
       test: /\.(server\.jsx|js)$/,
-      loaders: ['babel?presets[]=es2015&presets[]=stage-0&presets[]=react&plugins[]=add-module-exports&plugins[]=transform-decorators-legacy'],
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          presets: ['es2015', 'stage-0', 'react'],
+          plugins: ['add-module-exports', 'transform-decorators-legacy']
+        }
+      }],
       exclude: /node_modules/
     }])
 
-    // Append additional loaders to the beginning of default loaders array
-    ;['loaders', 'preLoaders', 'postLoaders'].forEach((loaderType) => {
-      this.config.module[loaderType] = this.options.backend[loaderType].concat(
-        this.config.module[loaderType])
-    })
+    // Append additional rules to the beginning of default rules array
+    this.config.module.rules = this.options.backend.rules.concat(this.config.module.rules)
 
     if (this.options.backend.resolve && this.options.backend.resolve.alias != null) {
       this.config.resolve.alias = this.options.backend.resolve.alias
@@ -58,14 +59,18 @@ module.exports = class BackendConfig extends BaseConfig {
     this.config.plugins = [
       new webpack.NormalModuleReplacementPlugin(/\.(styl|css)$/, require.resolve('node-noop')),
       new webpack.NormalModuleReplacementPlugin(/((?!\.server).{7}|^.{0,6})\.jsx$/, require.resolve('react-empty-component-es6')),
-      new webpack.BannerPlugin([
-        'try {',
-        '  require.resolve("source-map-support");',
-        '  require("source-map-support").install();',
-        '} catch(e) {',
-        '  require("dm-react-webpack/node_modules/source-map-support").install();',
-        '}'
-      ].join(' '), { raw: true, entryOnly: false })
+      new webpack.BannerPlugin({
+        banner: [
+          'try {',
+          '  require.resolve("source-map-support");',
+          '  require("source-map-support").install();',
+          '} catch(e) {',
+          '  require("dm-react-webpack/node_modules/source-map-support").install();',
+          '}'
+        ].join(' '),
+        raw: true,
+        entryOnly: false
+      })
     ]
   }
 

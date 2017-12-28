@@ -14,9 +14,7 @@ module.exports = class FrontendConfig extends BaseConfig {
     _.defaultsDeep(this.options, {
       stylus: {},
       frontend: {
-        loaders: [],
-        preLoaders: [],
-        postLoaders: []
+        rules: []
       }
     })
 
@@ -40,19 +38,27 @@ module.exports = class FrontendConfig extends BaseConfig {
 
     this.config.entry = this._getEntries(this.apps, this.options.frontend.baseEntry)
 
-    this.config.module.loaders = this.config.module.loaders.concat([
+    this.config.module.rules = this.config.module.rules.concat([
       {
         test: /\.svg$/,
-        loaders: ['babel?presets[]=es2015&presets[]=stage-0&presets[]=react', 'react-svg?jsx=1'],
+        use: [{
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015', 'stage-0', 'react']
+          }
+        }, {
+          loader: 'react-svg-loader',
+          options: {
+            jsx: 1
+          }
+        }],
         exclude: /(node_modules)/
       }
     ])
 
-    // Append additional loaders to the beginning of default loaders array
-    ;['loaders', 'preLoaders', 'postLoaders'].forEach((loaderType) => {
-      this.config.module[loaderType] = this.options.frontend[loaderType].concat(
-        this.config.module[loaderType])
-    })
+    // Append additional rules to the beginning of default rules array
+    this.config.module.rules = this.options.frontend.rules.concat(
+      this.config.module.rules)
 
     if (this.options.frontend.resolve && this.options.frontend.resolve.alias != null) {
       this.config.resolve.alias = this.options.frontend.resolve.alias
@@ -110,14 +116,20 @@ module.exports = class FrontendConfig extends BaseConfig {
     return _.merge({}, this.options.stylus, DEFAULT_STYLUS)
   }
 
-  _getActualStylusLoader (params = {}) {
+  _getActualStylusRule (params = {}) {
     params = _.merge({}, this._getStylusParams(), params)
-    let strStylusParams = JSON.stringify(params)
-    return `raw!postcss!stylus?${strStylusParams}`
+    return [
+      'raw-loader',
+      'postcss-loader',
+      {
+        loader: 'stylus-loader',
+        options: params
+      }
+    ]
   }
 
   // load styles/before.styl if it's present in point entry
-  _getBeforeStylusLoaders () {
+  _getBeforeStylusRule () {
     let res = []
     for (let entry in this.beforeStylusEntries) {
       if (!this.beforeStylusEntries.hasOwnProperty(entry)) continue
@@ -127,13 +139,13 @@ module.exports = class FrontendConfig extends BaseConfig {
         test: (absPath) => {
           return /\.styl$/.test(absPath) && absPath.indexOf(entry) !== -1
         },
-        loader: this._getActualStylusLoader({ import: [beforeStyl] })
+        use: this._getActualStylusRule({ import: [beforeStyl] })
       })
     }
     return res
   }
 
-  _getStylusLoader () {
+  _getStylusRule () {
     let beforeStylusEntries = this.beforeStylusEntries
     return {
       test: (absPath) => {
@@ -145,7 +157,7 @@ module.exports = class FrontendConfig extends BaseConfig {
         }
         return true
       },
-      loader: this._getActualStylusLoader()
+      use: this._getActualStylusRule()
     }
   }
 
