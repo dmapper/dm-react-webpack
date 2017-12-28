@@ -37,19 +37,18 @@ module.exports = class BaseConfig {
       }]
     }
 
-    // Append additional loaders to the beginning of default loaders array
-    if (this.options.loaders != null && _.isArray(this.options.loaders)) {
-      this.config.module.loaders = this.options.loaders.concat(this.config.module.loaders)
+    // Append additional rules to the beginning of default rules array
+    if (this.options.rules != null && _.isArray(this.options.rules)) {
+      this.config.module.rules = this.options.rules.concat(this.config.module.rules)
     }
 
     this.config.resolveLoader = {
-      root: path.join(__dirname, '/../node_modules'),
-      fallback: path.join(__dirname, '/../..')
+      modules: [path.join(__dirname, '/../node_modules'), path.join(__dirname, '/../..')]
     }
 
     this.config.resolve = {
-      extensions: [ '', '.json', '.js', '.jsx', '.yaml', '.coffee' ],
-      fallback: path.join(__dirname, '/../..')
+      extensions: [ '.json', '.js', '.jsx', '.yaml', '.coffee' ],
+      modules: ['node_modules', path.join(__dirname, '/../..')]
     }
 
     if (this.options.resolve && this.options.resolve.alias != null) {
