@@ -43,7 +43,15 @@ module.exports = class FrontendConfig extends BaseConfig {
     this.config.module.loaders = this.config.module.loaders.concat([
       {
         test: /\.svg$/,
-        loaders: ['babel?presets[]=es2015&presets[]=stage-0&presets[]=react', 'react-svg?jsx=1'],
+        loaders: [
+          'babel?presets[]=es2015&presets[]=stage-0&presets[]=react',
+          'react-svg?' + JSON.stringify({
+            jsx: 1,
+            svgo: {
+              plugins: [{removeTitle: true}],
+            }
+          })
+        ],
         exclude: /(node_modules)/
       }
     ])
