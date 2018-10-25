@@ -39,6 +39,15 @@ module.exports = class FrontendWatchConfig extends FrontendConfig {
       exclude: /node_modules/
     })
 
+    if (this.options.frontend.forceCompileModules) {
+      const array = this.options.frontend.forceCompileModules
+      this.config.module.postLoaders.push({
+        test: /\.jsx?$/,
+        loaders: jsxLoaders,
+        include: new RegExp(`node_modules/(?:${array.join('|')})`)
+      })
+    }
+
     this._initDevConfig()
   }
 

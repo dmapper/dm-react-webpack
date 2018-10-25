@@ -51,8 +51,7 @@ module.exports = class FrontendConfig extends BaseConfig {
               plugins: [{removeTitle: true}],
             }
           })
-        ],
-        exclude: /(node_modules)/
+        ]
       }
     ])
 

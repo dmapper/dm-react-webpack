@@ -53,6 +53,14 @@ module.exports = class FrontendBuildConfig extends FrontendConfig {
       exclude: /node_modules/
     })
 
+    if (this.options.frontend.forceCompileModules) {
+      const array = this.options.frontend.forceCompileModules
+      this.config.module.postLoaders.push({
+        test: /\.jsx?$/,
+        loaders: jsxLoaders,
+        include: new RegExp(`node_modules/(?:${array.join('|')})`)
+      })
+    }
     // Set production environment to get minified library builds (e.g. React)
     this.config.plugins.push(new webpack.DefinePlugin({
       'process.env': {
