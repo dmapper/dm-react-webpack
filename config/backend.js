@@ -57,7 +57,7 @@ module.exports = class BackendConfig extends BaseConfig {
 
     this.config.plugins = [
       new webpack.NormalModuleReplacementPlugin(/\.(styl|css)$/, require.resolve('node-noop')),
-      new webpack.NormalModuleReplacementPlugin(/((?!\.server).{7}|^.{0,6})\.jsx$/, require.resolve('react-empty-component-es6')),
+      new webpack.NormalModuleReplacementPlugin(/((?!\.server).{7}|^.{0,6})\.jsx$/, require.resolve('../EmptyComponent')),
       new webpack.BannerPlugin([
         'try {',
         '  require.resolve("source-map-support");',
